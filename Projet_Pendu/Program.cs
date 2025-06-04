@@ -2,28 +2,31 @@
 {
     internal class Program
     {
-        static void Main()
-        {
-            string cheminFichier = "EST-M3Prog-ED12_JeuDuPendu_ListeMots.txt";
-            List<string> listeMots;
-
-            try
+            static void Main()
             {
-                listeMots = ChargerListeMots(cheminFichier);
-            }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine($"Le fichier {Path.GetFullPath(cheminFichier)} est introuvable.");
-                return;
-            }
+                string cheminFichier = "EST-M3Prog-ED12_JeuDuPendu_ListeMots.txt";
+                List<string> listeMots;
 
-            string motADeviner = ObtenirMotADeviner(listeMots);
-            List<char> lettresJouees = new List<char> { 'E', 'A', 'R' };
-            int erreurs = 2;
+                try
+                {
+                    listeMots = ChargerListeMots(cheminFichier);
+                }
+                catch (FileNotFoundException)
+                {
+                    Console.WriteLine($"Le fichier {Path.GetFullPath(cheminFichier)} est introuvable.");
+                    return;
+                }
 
-            AfficherPotence(erreurs);
-            Console.WriteLine("\n" + ObtenirMotCache(motADeviner, lettresJouees));
-        }
+                string motADeviner = ObtenirMotADeviner(listeMots);
+                List<char> lettresJouees = new List<char>();
+
+                while (true)
+                {
+                    char lettre = SaisirLettreAZ(lettresJouees);
+                    lettresJouees.Add(lettre);
+                    Console.WriteLine($"Lettre jouée : {lettre}");
+                }
+            }
 
         /// <summary>
         /// Charge tous les mots depuis un fichier texte.
@@ -44,24 +47,68 @@
         }
 
         /// <summary>
-        /// Affiche la potence selon le nombre d'erreurs.
+        /// Affiche la potence selon le nombre d'erreurs (0 à 6).
         /// </summary>
         static void AfficherPotence(int erreurs)
         {
-            string[] potence = new string[]
-            {
-        "+--+---\n|     \n|     \n|     \n|     \n|     \n+-------",
-        "+--+---\n|  |  \n|     \n|     \n|     \n|     \n+-------",
-        "+--+---\n|  |  \n|  O  \n|     \n|     \n|     \n+-------",
-        "+--+---\n|  |  \n|  O  \n|  |  \n|     \n|     \n+-------",
-        "+--+---\n|  |  \n|  O  \n| /|  \n|     \n|     \n+-------",
-        "+--+---\n|  |  \n|  O  \n| /|\\ \n|     \n|     \n+-------",
-        "+--+---\n|  |  \n|  O  \n| /|\\ \n| /   \n|     \n+-------",
-        "+--+---\n|  |  \n|  O  \n| /|\\ \n| / \\ \n|     \n+-------"
-            };
+            Console.WriteLine("+--+---");
 
-            Console.WriteLine(potence[Math.Min(erreurs, potence.Length - 1)]);
+            switch (erreurs)
+            {
+                case 0:
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    break;
+                case 1:
+                    Console.WriteLine("|  |  ");
+                    Console.WriteLine("|  O  ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    break;
+                case 2:
+                    Console.WriteLine("|  |  ");
+                    Console.WriteLine("|  O  ");
+                    Console.WriteLine("|  |  ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    break;
+                case 3:
+                    Console.WriteLine("|  |  ");
+                    Console.WriteLine("|  O  ");
+                    Console.WriteLine("| /|  ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    break;
+                case 4:
+                    Console.WriteLine("|  |  ");
+                    Console.WriteLine("|  O  ");
+                    Console.WriteLine("| /|\\ ");
+                    Console.WriteLine("|     ");
+                    Console.WriteLine("|     ");
+                    break;
+                case 5:
+                    Console.WriteLine("|  |  ");
+                    Console.WriteLine("|  O  ");
+                    Console.WriteLine("| /|\\ ");
+                    Console.WriteLine("| /   ");
+                    Console.WriteLine("|     ");
+                    break;
+                default: // erreurs == 6 ou plus
+                    Console.WriteLine("|  |  ");
+                    Console.WriteLine("|  O  ");
+                    Console.WriteLine("| /|\\ ");
+                    Console.WriteLine("| / \\ ");
+                    Console.WriteLine("|     ");
+                    break;
+            }
+
+            Console.WriteLine("+-------");
         }
+
 
         /// <summary>
         /// Retourne le mot avec les lettres trouvées visibles, les autres en _.
@@ -78,6 +125,42 @@
             }
             return resultat.TrimEnd();
         }
+
+        /// <summary>
+        /// Demande à l'utilisateur de saisir une lettre de l'alphabet.
+        /// Vérifie que la lettre est valide (A-Z) et non déjà jouée.
+        /// </summary>
+        static char SaisirLettreAZ(List<char> lettresJouees)
+        {
+            while (true)
+            {
+                Console.Write("\nQuelle lettre voulez-vous jouer ? ");
+                string saisie = Console.ReadLine()?.Trim().ToUpper();
+
+                if (string.IsNullOrEmpty(saisie) || saisie.Length != 1 || !char.IsLetter(saisie[0]))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Votre saisie est invalide.");
+                    Console.ResetColor();
+                    continue;
+                }
+
+                char lettre = saisie[0];
+
+                if (lettresJouees.Contains(lettre))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Vous avez déjà joué cette lettre.");
+                    Console.ResetColor();
+                    Console.Write("Appuyez sur une touche pour continuer...");
+                    Console.ReadKey(true);
+                    continue;
+                }
+
+                return lettre;
+            }
+        }
+
     }
 }
 
