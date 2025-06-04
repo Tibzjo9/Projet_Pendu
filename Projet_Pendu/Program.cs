@@ -18,7 +18,11 @@
             }
 
             string motADeviner = ObtenirMotADeviner(listeMots);
-            Console.WriteLine($"Mot à deviner (DEBUG) : {motADeviner}"); // À retirer plus tard
+            List<char> lettresJouees = new List<char> { 'E', 'A', 'R' };
+            int erreurs = 2;
+
+            AfficherPotence(erreurs);
+            Console.WriteLine("\n" + ObtenirMotCache(motADeviner, lettresJouees));
         }
 
         /// <summary>
@@ -37,6 +41,42 @@
             Random random = new Random();
             int index = random.Next(mots.Count);
             return mots[index];
+        }
+
+        /// <summary>
+        /// Affiche la potence selon le nombre d'erreurs.
+        /// </summary>
+        static void AfficherPotence(int erreurs)
+        {
+            string[] potence = new string[]
+            {
+        "+--+---\n|     \n|     \n|     \n|     \n|     \n+-------",
+        "+--+---\n|  |  \n|     \n|     \n|     \n|     \n+-------",
+        "+--+---\n|  |  \n|  O  \n|     \n|     \n|     \n+-------",
+        "+--+---\n|  |  \n|  O  \n|  |  \n|     \n|     \n+-------",
+        "+--+---\n|  |  \n|  O  \n| /|  \n|     \n|     \n+-------",
+        "+--+---\n|  |  \n|  O  \n| /|\\ \n|     \n|     \n+-------",
+        "+--+---\n|  |  \n|  O  \n| /|\\ \n| /   \n|     \n+-------",
+        "+--+---\n|  |  \n|  O  \n| /|\\ \n| / \\ \n|     \n+-------"
+            };
+
+            Console.WriteLine(potence[Math.Min(erreurs, potence.Length - 1)]);
+        }
+
+        /// <summary>
+        /// Retourne le mot avec les lettres trouvées visibles, les autres en _.
+        /// </summary>
+        static string ObtenirMotCache(string mot, List<char> lettresJouees)
+        {
+            string resultat = "";
+            foreach (char c in mot)
+            {
+                if (lettresJouees.Contains(c))
+                    resultat += c + " ";
+                else
+                    resultat += "_ ";
+            }
+            return resultat.TrimEnd();
         }
     }
 }
